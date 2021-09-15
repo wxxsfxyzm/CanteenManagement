@@ -25,6 +25,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dyf.enums.ResultEnum.*;
+
 @Slf4j
 @CrossOrigin
 @RestController
@@ -50,7 +52,7 @@ public class AdminController {
             foodInfoVOList.add(foodInfoVO);
         }
 
-        return ResultVOUtil.querySuccess(foodInfoVOList);
+        return ResultVOUtil.success(QUERY_SUCCESS.getMessage(), foodInfoVOList);
     }
 
     // http://127.0.0.1:8080/canteen/admin/addFood
@@ -68,7 +70,7 @@ public class AdminController {
 
         iFoodInfoService.save(foodInfo);
 
-        return ResultVOUtil.addSuccess(foodForm);
+        return ResultVOUtil.success(ADD_SUCCESS.getMessage(), foodForm);
     }
 
     @PostMapping("/editFood")
@@ -84,7 +86,7 @@ public class AdminController {
 
         iFoodInfoService.save(foodInfo);
 
-        return ResultVOUtil.success("编辑成功", foodForm);
+        return ResultVOUtil.success(EDIT_SUCCESS.getMessage(), foodForm);
 
     }
 
@@ -93,9 +95,9 @@ public class AdminController {
 
         List<FoodInfo> foodInfoList = iFoodInfoService.findByFoodName(foodName);
         if (foodInfoList.isEmpty()) {
-            return ResultVOUtil.queryFail();
+            return ResultVOUtil.fail(QUERY_FAIL.getCode(), QUERY_FAIL.getMessage());
         }
-        return ResultVOUtil.querySuccess(foodInfoList);
+        return ResultVOUtil.success(QUERY_SUCCESS.getMessage(), foodInfoList);
     }
 
     @GetMapping("/getStudentList")
@@ -115,19 +117,19 @@ public class AdminController {
 //            studentInfoVOList.add(studentInfoVO);
 //        }
 
-        return ResultVOUtil.querySuccess(studentInfoPage);
+        return ResultVOUtil.success(QUERY_SUCCESS.getMessage(), studentInfoPage);
     }
 
     @PostMapping(value = "/addStudent", produces = "application/json")
     public ResultVO addStudent(@RequestBody StudentForm studentForm) {
         if (studentForm == null) {
-            return ResultVOUtil.addFail();
+            return ResultVOUtil.fail(ADD_FAIL.getCode(), ADD_FAIL.getMessage());
         }
         StudentInfo studentInfo = new StudentInfo();
 
         BeanUtils.copyProperties(studentForm, studentInfo);
 
-        return ResultVOUtil.addSuccess(iStudentService.addStudent(studentInfo));
+        return ResultVOUtil.success(ADD_SUCCESS.getMessage(), iStudentService.addStudent(studentInfo));
 
     }
 
@@ -135,21 +137,21 @@ public class AdminController {
     @PostMapping(value = "/editStudent", produces = "application/json")
     public ResultVO editStudent(@RequestBody StudentForm studentForm) {
         if (studentForm == null) {
-            return ResultVOUtil.editFail();
+            return ResultVOUtil.fail(EDIT_FAIL.getCode(), EDIT_FAIL.getMessage());
         }
 
 
         StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentForm.getStudentId());
 
         if (studentInfo == null) {
-            throw new SellException(ResultEnum.STUDENT_NOT_EXIST);
+            throw new SellException(STUDENT_NOT_EXIST);
         }
 
         if (studentForm.getBalance() != null) studentInfo.setBalance(studentForm.getBalance());
         if (studentForm.getStudentName() != null) studentInfo.setStudentName(studentForm.getStudentName());
         if (studentForm.getPassword() != null) studentInfo.setPassword(studentForm.getPassword());
 
-        return ResultVOUtil.success("编辑成功", iStudentService.editStudent(studentInfo));
+        return ResultVOUtil.success(EDIT_SUCCESS.getMessage(), iStudentService.editStudent(studentInfo));
     }
 
     @PostMapping(value = "/stuDeposit", produces = "application/json")
@@ -157,16 +159,16 @@ public class AdminController {
         StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
 
         if (studentInfo == null) {
-            throw new SellException(ResultEnum.STUDENT_NOT_EXIST);
+            throw new SellException(STUDENT_NOT_EXIST);
         }
 
         if (amount.compareTo(BigDecimal.ZERO) < 1) {
-            return ResultVOUtil.depositFail();
+            return ResultVOUtil.fail(DEPOSIT_FAIL.getCode(), DEPOSIT_FAIL.getMessage());
         }
 
         iStudentService.stuDeposit(studentInfo, amount);
 
-        return ResultVOUtil.depositSuccess();
+        return ResultVOUtil.success(0, DEPOSIT_SUCCESS.getMessage());
     }
 
     @PostMapping(value = "/deleteStudent", produces = "application/json")
@@ -176,10 +178,10 @@ public class AdminController {
             iStudentService.deleteStudent(studentInfo);
         } catch (SellException sellException) {
             log.error("查无此人");
-            return ResultVOUtil.deleteFail();
+            return ResultVOUtil.fail(STUDENT_NOT_EXIST.getCode(), STUDENT_NOT_EXIST.getMessage());
         }
 
-        return ResultVOUtil.deleteSuccess();
+        return ResultVOUtil.success(0, DELETE_SUCCESS.getMessage());
     }
 
     @PostMapping(value = "/findStudentByName", produces = "application/json")
@@ -191,10 +193,10 @@ public class AdminController {
         Page<StudentInfo> studentInfoList = iStudentService.findByStudentName(studentName, pageable);
 
         if (studentInfoList.isEmpty()) {
-            return ResultVOUtil.queryFail();
+            return ResultVOUtil.fail(QUERY_FAIL.getCode(), QUERY_FAIL.getMessage());
         }
 
-        return ResultVOUtil.querySuccess(studentInfoList);
+        return ResultVOUtil.success(QUERY_SUCCESS.getMessage(), studentInfoList);
     }
 
     @PostMapping(value = "/findStudentById", produces = "application/json")
@@ -205,10 +207,10 @@ public class AdminController {
         Page<StudentInfo> studentInfoPage = iStudentService.findByStudentId(studentId, pageRequest);
 
         if (studentInfoPage.isEmpty()) {
-            return ResultVOUtil.queryFail();
+            return ResultVOUtil.fail(QUERY_FAIL.getCode(), QUERY_FAIL.getMessage());
         }
 
-        return ResultVOUtil.querySuccess(studentInfoPage);
+        return ResultVOUtil.success(QUERY_SUCCESS.getMessage(), studentInfoPage);
     }
 
 }

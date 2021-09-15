@@ -27,8 +27,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Service
-public class OrderServiceImpl implements IOrderService
-{
+public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private IFoodInfoService iFoodInfoService;
@@ -53,11 +52,10 @@ public class OrderServiceImpl implements IOrderService
 
         BigDecimal orderTotalPrice = new BigDecimal(BigInteger.ZERO);
 
-        for(OrderDetail orderDetail : orderDTO.getOrderDetailList())
-        {
+        for (OrderDetail orderDetail : orderDTO.getOrderDetailList()) {
             FoodInfo foodInfo = iFoodInfoService.findById(orderDetail.getFoodId());
 
-            if(foodInfo == null){
+            if (foodInfo == null) {
                 throw new SellException(ResultEnum.FOOD_NOT_EXIST);
             }
 
@@ -88,19 +86,16 @@ public class OrderServiceImpl implements IOrderService
     }
 
     @Override
-    public OrderDTO findById(String orderId)
-    {
+    public OrderDTO findById(String orderId) {
 
         OrderMaster orderMaster = iOrderMasterDAO.findById(orderId).orElse(null);
-        if(orderMaster == null)
-        {
+        if (orderMaster == null) {
             throw new SellException(ResultEnum.FOOD_NOT_EXIST);
         }
 
         List<OrderDetail> orderDetailList = iOrderDetailDAO.findByOrderId(orderId);
-        if(CollectionUtils.isEmpty(orderDetailList))
-        {
-            throw new SellException(ResultEnum.ORDERDETAIL_NOT_EXIST);
+        if (CollectionUtils.isEmpty(orderDetailList)) {
+            throw new SellException(ResultEnum.ORDER_DETAIL_NOT_EXIST);
         }
 
         OrderDTO orderDTO = new OrderDTO();
@@ -109,37 +104,39 @@ public class OrderServiceImpl implements IOrderService
         return orderDTO;
     }
 
-    /** 返回值为page */
+    /**
+     * 返回值为page
+     */
     @Override
-    public Page<OrderDTO> findList(String studentId, Pageable pageable)
-    {
+    public Page<OrderDTO> findList(String studentId, Pageable pageable) {
         Page<OrderMaster> orderMasterPage = iOrderMasterDAO.queryByStudentId(studentId, pageable);
 
         List<OrderDTO> orderDTOList = OrderMaster2OrderDTOConverter.convert(orderMasterPage.getContent());
 
-        return new PageImpl<OrderDTO>(orderDTOList,pageable,orderMasterPage.getTotalElements());
+        return new PageImpl<OrderDTO>(orderDTOList, pageable, orderMasterPage.getTotalElements());
     }
 
     @Override
     public Page<OrderDTO> findList(Pageable pageable) {
         // 带分页 查询所有的 订单列表
-        Page<OrderMaster>  orderMasterPageList = iOrderMasterDAO.findAll(pageable);
+        Page<OrderMaster> orderMasterPageList = iOrderMasterDAO.findAll(pageable);
 
         // 将OrderMaster 转换成 OrderDTO
-        List<OrderDTO>  orderDTOList = OrderMaster2OrderDTOConverter.convert(orderMasterPageList.getContent());
+        List<OrderDTO> orderDTOList = OrderMaster2OrderDTOConverter.convert(orderMasterPageList.getContent());
         return new PageImpl<OrderDTO>(orderDTOList, pageable, orderMasterPageList.getTotalElements());
     }
 
-    /** 返回值为list */
+    /**
+     * 返回值为list
+     */
     @Override
-    public List<OrderDTO> findList(String studentId)
-    {
+    public List<OrderDTO> findList(String studentId) {
         List<OrderMaster> orderMasterList = iOrderMasterDAO.queryByStudentId(studentId);
 
         // 用转换器 将OrderMaster转换成OrderDTO
         List<OrderDTO> orderDTOList = OrderMaster2OrderDTOConverter.convert(orderMasterList);
 
-        for (OrderDTO orderDTO : orderDTOList){
+        for (OrderDTO orderDTO : orderDTOList) {
 
             List<OrderDetail> orderDetailList = iOrderDetailDAO.findByOrderId(orderDTO.getOrderId());
 
@@ -148,8 +145,6 @@ public class OrderServiceImpl implements IOrderService
         return orderDTOList;
 
     }
-
-
 
 
 }

@@ -24,11 +24,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dyf.enums.ResultEnum.*;
+
 @Slf4j
 @RestController
 @RequestMapping("/sell")
-public class SellController
-{
+public class SellController {
     @Autowired
     private IOrderService iOrderService;
 
@@ -41,29 +42,26 @@ public class SellController
     // http://127.0.0.1:8080/canteen/sell/foodList
     @CrossOrigin
     @GetMapping("/foodList")
-    public ResultVO list()
-    {
+    public ResultVO list() {
 
         List<FoodInfo> foodInfoList = iFoodInfoService.findUpAll();
 
         List<FoodInfoVO> foodInfoVOList = new ArrayList<FoodInfoVO>();
 
-        for(FoodInfo foodInfo : foodInfoList)
-        {
+        for (FoodInfo foodInfo : foodInfoList) {
             FoodInfoVO foodInfoVO = new FoodInfoVO();
 
             BeanUtils.copyProperties(foodInfo, foodInfoVO);
             foodInfoVOList.add(foodInfoVO);
         }
 
-        return ResultVOUtil.querySuccess(foodInfoVOList);
+        return ResultVOUtil.success("查询成功", foodInfoVOList);
     }
 
     // http://127.0.0.1:8080/canteen/sell/pay
     @CrossOrigin
     @PostMapping(value = "/pay", produces = "application/json")
-    public ResultVO pay(@RequestBody OrderForm orderForm )
-    {
+    public ResultVO pay(@RequestBody OrderForm orderForm) {
         /* 根据传入的学生id查询相关的学生信息 */
         StudentDTO studentDTO = iStudentService.findByStudentId(orderForm.getStudentId());
         StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(orderForm.getStudentId());
@@ -72,12 +70,10 @@ public class SellController
         BigDecimal totalPrice = BigDecimal.ZERO;
 
         /* 计算订单总价 */
-        for (ChosenFoodDTO chosenFoodDTO : orderForm.getChosenFoodDTOList())
-        {
+        for (ChosenFoodDTO chosenFoodDTO : orderForm.getChosenFoodDTOList()) {
             /* 检查食物是否存在 */
-            if (chosenFoodDTO.getFoodId() == null)
-            {
-                throw  new SellException(ResultEnum.FOOD_NOT_EXIST);
+            if (chosenFoodDTO.getFoodId() == null) {
+                throw new SellException(ResultEnum.FOOD_NOT_EXIST);
             }
 
             /* 根据订单id查询食物单价 */
@@ -89,14 +85,14 @@ public class SellController
         /* 判断密码是否匹配 */
         String password = orderForm.getPassword();
 
-        if ( !password.equals(studentInfo.getPassword())){
-            return ResultVOUtil.wrongPassword();
+        if (!password.equals(studentInfo.getPassword())) {
+            return ResultVOUtil.fail(PASSWORD_MISMATCH.getCode(), PASSWORD_MISMATCH.getMessage());
         }
 
         /* 判断余额是否支付 */
-        if(studentDTO.getBalance().compareTo(totalPrice) == -1)     //余额不足
+        if (studentDTO.getBalance().compareTo(totalPrice) < 0)     //余额不足
         {
-            return ResultVOUtil.BalanceInsufficient(studentDTO);
+            return ResultVOUtil.fail(BALANCE_NOT_EFFICIENT.getCode(), BALANCE_NOT_EFFICIENT.getMessage(), studentDTO);
         }
 
         /* 创建订单 */
@@ -104,8 +100,7 @@ public class SellController
 
         List<OrderDetail> orderDetailList = new ArrayList<OrderDetail>();
 
-        for (ChosenFoodDTO chosenFoodDTO : orderForm.getChosenFoodDTOList())
-        {
+        for (ChosenFoodDTO chosenFoodDTO : orderForm.getChosenFoodDTOList()) {
             OrderDetail orderDetail = new OrderDetail();
 
             orderDetail.setFoodId(chosenFoodDTO.getFoodId());
@@ -116,15 +111,14 @@ public class SellController
         orderDTO.setStudentId(orderForm.getStudentId());
 
         iOrderService.create(orderDTO);
-        return ResultVOUtil.paySuccess(iStudentService.pay(totalPrice, orderForm.getStudentId()));        //余额足够，扣除余额，返回的对象包含学生DTO对象（学生id，姓名，余额）
+        return ResultVOUtil.success(PAY_SUCCESS.getMessage(), iStudentService.pay(totalPrice, orderForm.getStudentId()));        //余额足够，扣除余额，返回的对象包含学生DTO对象（学生id，姓名，余额）
 
     }
 
     @CrossOrigin
-    @PostMapping(value = "/editFood",produces = "application/json")
-    public ResultVO editFood(FoodInfo foodInfo)
-    {
-        return ResultVOUtil.success("编辑成功",iFoodInfoService.edit(foodInfo));
+    @PostMapping(value = "/editFood", produces = "application/json")
+    public ResultVO editFood(FoodInfo foodInfo) {
+        return ResultVOUtil.success(EDIT_SUCCESS.getMessage(), iFoodInfoService.edit(foodInfo));
     }
 
 
