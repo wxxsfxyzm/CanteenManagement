@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import static com.dyf.enums.ResultEnum.*;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/user")
@@ -32,7 +34,7 @@ public class UserController {
             @RequestParam(value = "userid") String studentId,
             @RequestParam(value = "password") String password) {
         if (Objects.equals(studentId, "195030320")) // 这是一个彩蛋
-            return ResultVOUtil.fail(-1, "牛马，你不配进入");
+            return ResultVOUtil.fail(-99, "牛马，你不配进入");
         String info = "登录逻辑";
         log.info(info +
                 ": userid = " +
@@ -45,19 +47,20 @@ public class UserController {
         if (user != null) {
             log.info(user.toString());
             if (Objects.equals(password, user.getPassword())) {
-                info = "登录成功！";
+                info = LOGIN_SUCCESS.getMessage();
+                log.info(info);
                 return ResultVOUtil.success(info, user);
             } else {
-                info = "密码错误！";
-                return ResultVOUtil.fail(-1, info);
+                info = PASSWORD_MISMATCH.getMessage();
+                log.info(info);
+                return ResultVOUtil.fail(PASSWORD_MISMATCH.getCode(), info);
             }
         } else {
-            info = "没查找到该用户！";
+            info = STUDENT_NOT_EXIST.getMessage();
             log.info(info);
         }
 
-        log.info(info);
-        return ResultVOUtil.fail(-2, info);
+        return ResultVOUtil.fail(STUDENT_NOT_EXIST.getCode(), info);
     }
 
     /**
@@ -81,17 +84,16 @@ public class UserController {
                 username +
                 ", password = " +
                 password);
-
         if (iStudentService.findById(userid) == null) {// 用户名未重复，放行
             StudentInfo user = new StudentInfo(userid, username, password);
             log.info(user.toString());
             iStudentService.save(user);
             log.info(iStudentService.findById(userid).toString());
-            info = "注册成功";
+            info = REGISTER_SUCCESS.getMessage();
             return ResultVOUtil.success(iStudentService.findById(userid));
         } else { // 用户名重复
-            info = "学号重复";
-            return ResultVOUtil.success(1, info);
+            info = DUPLICATE_STUDENT_ID.getMessage();
+            return ResultVOUtil.success(DUPLICATE_STUDENT_ID.getCode(), info);
         }
     }
 
@@ -101,16 +103,18 @@ public class UserController {
             @RequestParam(value = "balance") BigDecimal amount) {
         StudentInfo student = iStudentService.findById(studentId);
 
-        String info = "";
+        String info = "充值逻辑";
+        log.info(info);
+
         if (student == null) {
-            info = "没有查询到学生信息";
+            info = STUDENT_NOT_EXIST.getMessage();
             log.info(info);
-            return ResultVOUtil.fail(-1, info);
+            return ResultVOUtil.fail(STUDENT_NOT_EXIST.getCode(), info);
         }
         log.info(student.toString());
 
         StudentInfo studentInfoAfterDepositOperation = iStudentService.stuDeposit(student, amount);
 
-        return ResultVOUtil.success("充值成功", studentInfoAfterDepositOperation);
+        return ResultVOUtil.success(DEPOSIT_SUCCESS.getMessage(), studentInfoAfterDepositOperation);
     }
 }
