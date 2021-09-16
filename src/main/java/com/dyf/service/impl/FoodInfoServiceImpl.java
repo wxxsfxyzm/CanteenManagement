@@ -15,20 +15,17 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class FoodInfoServiceImpl implements IFoodInfoService
-{
+public class FoodInfoServiceImpl implements IFoodInfoService {
     @Autowired
     private IFoodInfoDAO iFoodInfoDAO;
 
     @Override
-    public FoodInfo findById(String foodId)
-    {
+    public FoodInfo findById(String foodId) {
         return iFoodInfoDAO.findById(foodId).orElse(null);
     }
 
     @Override
-    public Page<FoodInfo> findByFoodName(String foodName, Pageable pageable)
-    {
+    public Page<FoodInfo> findByFoodName(String foodName, Pageable pageable) {
         return iFoodInfoDAO.findByFoodNameLike("%" + foodName + "%", pageable);
     }
 
@@ -38,8 +35,7 @@ public class FoodInfoServiceImpl implements IFoodInfoService
     }
 
     @Override
-    public List<FoodInfo> findUpAll()
-    {
+    public List<FoodInfo> findUpAll() {
         return iFoodInfoDAO.queryByFoodStatus(FoodStatusEnum.UP.getCode());
     }
 
@@ -49,8 +45,7 @@ public class FoodInfoServiceImpl implements IFoodInfoService
     }
 
     @Override
-    public FoodInfo save(FoodInfo foodInfo)
-    {
+    public FoodInfo save(FoodInfo foodInfo) {
         return iFoodInfoDAO.save(foodInfo);
     }
 
@@ -59,15 +54,15 @@ public class FoodInfoServiceImpl implements IFoodInfoService
 
         FoodInfo foodInfo1 = iFoodInfoDAO.findByFoodId(foodInfo.getFoodId());
 
-        if(foodInfo.getFoodName() != null){
+        if (foodInfo.getFoodName() != null) {
             foodInfo1.setFoodName(foodInfo.getFoodName());
         }
 
-        if(foodInfo.getFoodPrice().compareTo(BigDecimal.ZERO) >= -1){
+        if (foodInfo.getFoodPrice().compareTo(BigDecimal.ZERO) >= -1) {
             foodInfo1.setFoodPrice(foodInfo.getFoodPrice());
         }
 
-        if(foodInfo.getFoodIcon() != null){
+        if (foodInfo.getFoodIcon() != null) {
             foodInfo1.setFoodIcon(foodInfo.getFoodIcon());
         }
 
@@ -80,17 +75,17 @@ public class FoodInfoServiceImpl implements IFoodInfoService
 
         FoodInfo foodInfo = iFoodInfoDAO.findById(foodId).orElse(null);
 
-        /**
-         * 食物id不存在
+        /*
+          食物id不存在
          */
-        if(foodInfo == null){
+        if (foodInfo == null) {
             throw new SellException(ResultEnum.FOOD_NOT_EXIST);
         }
 
-        /**
-         * 食物上架状态异常
+        /*
+          食物上架状态异常
          */
-        if(foodInfo.getFoodStatusEnum() == FoodStatusEnum.UP){
+        if (foodInfo.getFoodStatusEnum() == FoodStatusEnum.UP) {
             throw new SellException(ResultEnum.FOOD_STATUS_ERROR);
         }
 
@@ -104,17 +99,17 @@ public class FoodInfoServiceImpl implements IFoodInfoService
     public FoodInfo offSale(String foodId) {
         FoodInfo foodInfo = iFoodInfoDAO.findById(foodId).orElse(null);
 
-        /**
-         * 食物id不存在
+        /*
+          食物id不存在
          */
-        if(foodInfo == null){
+        if (foodInfo == null) {
             throw new SellException(ResultEnum.FOOD_NOT_EXIST);
         }
 
-        /**
-         * 食物下架状态异常
+        /*
+          食物下架状态异常
          */
-        if(foodInfo.getFoodStatusEnum() == FoodStatusEnum.DOWN){
+        if (foodInfo.getFoodStatusEnum() == FoodStatusEnum.DOWN) {
             throw new SellException(ResultEnum.FOOD_STATUS_ERROR);
         }
 

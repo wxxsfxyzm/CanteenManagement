@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import static com.dyf.enums.ResultEnum.QUERY_SUCCESS;
+
 @Service
 @Slf4j
 public class StudentServiceImpl implements IStudentService {
@@ -161,7 +163,7 @@ public class StudentServiceImpl implements IStudentService {
         for (StudentInfo singleUser : iStudentInfoDAO.findAll()) {
             // log.info(singleUser.toString());
             if (Objects.equals(singleUser.getStudentName(), username)) {
-                log.info("查找到了！");
+                log.info(QUERY_SUCCESS.getMessage());
                 return singleUser;
             }
         }
@@ -174,7 +176,7 @@ public class StudentServiceImpl implements IStudentService {
         for (StudentInfo singleUser : iStudentInfoDAO.findAll()) {
             // log.info(singleUser.toString());
             if (Objects.equals(singleUser.getStudentId(), userId)) {
-                log.info("查找到了！");
+                log.info(QUERY_SUCCESS.getMessage());
                 return singleUser;
             }
         }
