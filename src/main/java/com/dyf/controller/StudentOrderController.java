@@ -20,6 +20,7 @@ import java.util.List;
 import static com.dyf.enums.ResultEnum.ORDER_CREATE_SUCCESS;
 
 @Slf4j
+@CrossOrigin
 @RestController
 @RequestMapping("/student/order")
 public class StudentOrderController {
@@ -30,7 +31,6 @@ public class StudentOrderController {
     private IStudentService iStudentService;
 
 
-    @CrossOrigin
     @PostMapping(value = "/orderMaster", produces = "application/json")
     public OrderMasterVO orderMaster(String studentId) {
         StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
@@ -42,8 +42,7 @@ public class StudentOrderController {
 
         return ResultVOUtil.queryOrderMasterSuccess(orderMaster, studentInfo);
     }
-
-    @CrossOrigin
+    
     @PostMapping(value = "/create", produces = "application/json")
     public ResultVO create(@RequestBody OrderForm orderForm) {
         OrderDTO orderDTO = new OrderDTO();
