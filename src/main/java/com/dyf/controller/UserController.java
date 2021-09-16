@@ -1,5 +1,6 @@
 package com.dyf.controller;
 
+
 import com.dyf.entity.StudentInfo;
 import com.dyf.service.IStudentService;
 import com.dyf.utils.ResultVOUtil;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import static com.dyf.constant.Constant.*;
 import static com.dyf.enums.ResultEnum.*;
 
 @CrossOrigin
@@ -35,7 +37,7 @@ public class UserController {
             @RequestParam(value = "password") String password) {
         if (Objects.equals(studentId, "195030320")) // 这是一个彩蛋
             return ResultVOUtil.fail(-99, "牛马，你不配进入");
-        String info = "登录逻辑";
+        String info = LOGIN_LOGIC;
         log.info(info +
                 ": userid = " +
                 studentId +
@@ -76,7 +78,7 @@ public class UserController {
             @RequestParam(value = "userid") String userid,
             @RequestParam(value = "username") String username,
             @RequestParam(value = "password") String password) {
-        String info = "注册逻辑";
+        String info = REGISTER_LOGIC;
         log.info(info +
                 ": userid = " +
                 userid +
@@ -103,7 +105,7 @@ public class UserController {
             @RequestParam(value = "balance") BigDecimal amount) {
         StudentInfo student = iStudentService.findById(studentId);
 
-        String info = "充值逻辑";
+        String info = DEPOSIT_LOGIC;
         log.info(info);
 
         if (student == null) {

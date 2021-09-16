@@ -26,6 +26,7 @@ import java.util.List;
 
 import static com.dyf.enums.ResultEnum.*;
 
+@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("/sell")
@@ -40,7 +41,6 @@ public class SellController {
     private IStudentService iStudentService;
 
     // http://127.0.0.1:8080/canteen/sell/foodList
-    @CrossOrigin
     @GetMapping("/foodList")
     public ResultVO list() {
 
@@ -55,11 +55,10 @@ public class SellController {
             foodInfoVOList.add(foodInfoVO);
         }
 
-        return ResultVOUtil.success("查询成功", foodInfoVOList);
+        return ResultVOUtil.success(QUERY_SUCCESS.getMessage(), foodInfoVOList);
     }
 
     // http://127.0.0.1:8080/canteen/sell/pay
-    @CrossOrigin
     @PostMapping(value = "/pay", produces = "application/json")
     public ResultVO pay(@RequestBody OrderForm orderForm) {
         /* 根据传入的学生id查询相关的学生信息 */
@@ -115,7 +114,7 @@ public class SellController {
 
     }
 
-    @CrossOrigin
+
     @PostMapping(value = "/editFood", produces = "application/json")
     public ResultVO editFood(FoodInfo foodInfo) {
         return ResultVOUtil.success(EDIT_SUCCESS.getMessage(), iFoodInfoService.edit(foodInfo));
