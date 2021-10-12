@@ -8,6 +8,8 @@ import org.springframework.lang.Nullable;
 
 import java.util.List;
 
+import static com.dyf.constant.Constant.*;
+
 public class ResultVOUtil {
     /**
      * 查询成功
@@ -21,8 +23,8 @@ public class ResultVOUtil {
             StudentInfo studentInfo) {
         OrderMasterVO orderMasterVO = new OrderMasterVO();
 
-        orderMasterVO.setCode(0);
-        orderMasterVO.setMsg("查询成功");
+        orderMasterVO.setCode(SUCCESS);
+        orderMasterVO.setMsg(QUERY_SUCCESS);
         orderMasterVO.setStudentId(studentInfo.getStudentId());
         orderMasterVO.setStudentBalance(studentInfo.getBalance());
         orderMasterVO.setStudentName(studentInfo.getStudentName());
@@ -40,8 +42,8 @@ public class ResultVOUtil {
      */
     public static ResultVO success(Object object) {
         ResultVO resultVO = new ResultVO();
-        resultVO.setCode(0);
-        resultVO.setMsg("成功");
+        resultVO.setCode(SUCCESS);
+        resultVO.setMsg(SUCCEED);
         resultVO.setData(object);
         return resultVO;
     }
@@ -57,7 +59,7 @@ public class ResultVOUtil {
             @Nullable String msg,
             @Nullable Object object) {
         ResultVO resultVO = new ResultVO();
-        resultVO.setCode(0);
+        resultVO.setCode(SUCCESS);
         resultVO.setMsg(msg);
         resultVO.setData(object);
         return resultVO;
@@ -120,7 +122,7 @@ public class ResultVOUtil {
     public static OrderMasterVO queryOrderMasterFail() {
         OrderMasterVO orderMasterVO = new OrderMasterVO();
         orderMasterVO.setCode(1);
-        orderMasterVO.setMsg("查询失败");
+        orderMasterVO.setMsg(QUERY_FAIL);
         return orderMasterVO;
     }
 
