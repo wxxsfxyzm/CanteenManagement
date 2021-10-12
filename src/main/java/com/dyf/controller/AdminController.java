@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dyf.constant.Constant.SUCCESS;
 import static com.dyf.enums.ResultEnum.*;
 
 @Slf4j
@@ -101,8 +102,9 @@ public class AdminController {
     }
 
     @GetMapping("/getStudentList")
-    public ResultVO getStudentList(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                   @RequestParam(value = "size", defaultValue = "10") Integer size) {
+    public ResultVO getStudentList(
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
 
         Page<StudentInfo> studentInfoPage = iStudentService.getStudentPage(pageRequest);
@@ -177,17 +179,18 @@ public class AdminController {
             StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
             iStudentService.deleteStudent(studentInfo);
         } catch (SellException sellException) {
-            log.error("查无此人");
+            log.error(STUDENT_NOT_EXIST.getMessage());
             return ResultVOUtil.fail(STUDENT_NOT_EXIST.getCode(), STUDENT_NOT_EXIST.getMessage());
         }
 
-        return ResultVOUtil.success(0, DELETE_SUCCESS.getMessage());
+        return ResultVOUtil.success(SUCCESS, DELETE_SUCCESS.getMessage());
     }
 
     @PostMapping(value = "/findStudentByName", produces = "application/json")
-    public ResultVO findStudentByName(@RequestParam String studentName,
-                                      @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                      @RequestParam(value = "size", defaultValue = "10") Integer size) {
+    public ResultVO findStudentByName(
+            @RequestParam String studentName,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<StudentInfo> studentInfoList = iStudentService.findByStudentName(studentName, pageable);
@@ -200,9 +203,10 @@ public class AdminController {
     }
 
     @PostMapping(value = "/findStudentById", produces = "application/json")
-    public ResultVO findStudentById(@RequestParam String studentId,
-                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
+    public ResultVO findStudentById(
+            @RequestParam String studentId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
         Page<StudentInfo> studentInfoPage = iStudentService.findByStudentId(studentId, pageRequest);
 

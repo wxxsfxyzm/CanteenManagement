@@ -14,5 +14,5 @@ spring:
     cache: false
 server:
   servlet:
-    context-path: /sell
+    context-path: /canteen
   port: 8080

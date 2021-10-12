@@ -36,7 +36,7 @@ public class UserController {
             @RequestParam(value = "userid") String studentId,
             @RequestParam(value = "password") String password) {
         if (Objects.equals(studentId, "195030320")) // 这是一个彩蛋
-            return ResultVOUtil.fail(-99, "牛马，你不配进入");
+            return ResultVOUtil.fail(-99, NM_NO_ENTER);
         String info = LOGIN_LOGIC;
         log.info(info +
                 ": userid = " +
@@ -95,7 +95,7 @@ public class UserController {
             return ResultVOUtil.success(iStudentService.findById(userid));
         } else { // 用户名重复
             info = DUPLICATE_STUDENT_ID.getMessage();
-            return ResultVOUtil.success(DUPLICATE_STUDENT_ID.getCode(), info);
+            return ResultVOUtil.fail(DUPLICATE_STUDENT_ID.getCode(), info);
         }
     }
 
