@@ -41,6 +41,7 @@ public class SellController {
     private IStudentService iStudentService;
 
     // http://127.0.0.1:8080/canteen/sell/foodList
+    @CrossOrigin
     @GetMapping("/foodList")
     public ResultVO list() {
 
