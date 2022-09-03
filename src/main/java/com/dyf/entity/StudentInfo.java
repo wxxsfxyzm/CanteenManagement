@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Web端的学生管理Bean
@@ -36,7 +35,7 @@ public class StudentInfo implements Serializable {
 
     private String sex;
 
-    private Date birthday;
+    private String birthday;
     /**
      * 余额
      */

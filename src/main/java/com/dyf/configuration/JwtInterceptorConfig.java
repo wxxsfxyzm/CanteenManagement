@@ -13,7 +13,8 @@ public class JwtInterceptorConfig implements WebMvcConfigurer {
 
         //  默认拦截所有路径
         registry.addInterceptor(authenticationInterceptor())
-                .addPathPatterns("/canteen/**");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/error");
     }
 
     @Bean

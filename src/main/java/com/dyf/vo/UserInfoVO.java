@@ -17,7 +17,7 @@ public class UserInfoVO implements Serializable {
     @Nullable
     private String sex;
     @Nullable
-    private Date birthday;
+    private String birthday;
     private Integer noun = 0;
     private BigDecimal balance;
     private Boolean isUser;

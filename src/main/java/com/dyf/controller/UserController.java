@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -22,7 +23,7 @@ import static com.dyf.enums.ResultEnum.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/userinfo")
 @Slf4j
 public class UserController {
     @Autowired
@@ -91,7 +92,7 @@ public class UserController {
                 phonenumber +
                 ", password = " +
                 password);
-        if (iStudentService.findById(userid) == null) {// 用户名未重复，放行
+        if (iStudentService.findByPhoneNumber(phonenumber) == null) {// 用户名未重复，放行
             StudentInfo user = new StudentInfo(userid, phonenumber, null, password);
             log.info(user.toString());
             iStudentService.save(user);
@@ -99,10 +100,38 @@ public class UserController {
             info = REGISTER_SUCCESS.getMessage();
             return ResultVOUtil.success(200, "注册成功", iStudentService.findById(userid));
         } else { // 用户名重复
-            info = DUPLICATE_STUDENT_ID.getMessage();
-            return ResultVOUtil.fail(200, "注册失败：该账号已注册，请直接登录");
+            // info = DUPLICATE_STUDENT_ID.getMessage();
+            return ResultVOUtil.fail(100, "注册失败：该账号已注册，请直接登录");
         }
     }
+
+    @PostMapping(value = "/getInfo")
+    public ResultVO getInfo(HttpServletRequest request) {
+        String userid = request.getAttribute("userId").toString();
+        log.info(userid);
+        StudentInfo student = iStudentService.findById(userid);
+        log.info(student.toString());
+        UserDTO userDTO = new UserDTO(new UserInfoVO(student, true), null);
+        log.info(userDTO.toString());
+        return ResultVOUtil.success(200, "成功", userDTO);
+    }
+
+    @PostMapping(value = "/update")
+    public ResultVO update(
+            @RequestParam(value = "birthday") String birthday,
+            @RequestParam(value = "sex") String sex,
+            HttpServletRequest request
+    ) {
+        String userid = request.getAttribute("userId").toString();
+        log.info(userid);
+        StudentInfo user = iStudentService.findById(userid);
+        user.setBirthday(birthday);
+        user.setSex(sex);
+        log.info(user.toString());
+        iStudentService.editStudent(user);
+        return ResultVOUtil.success(200, "更新成功", null);
+    }
+
 
     @PostMapping(value = "/deposit")
     public ResultVO stuDeposit(

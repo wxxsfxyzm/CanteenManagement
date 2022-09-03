@@ -41,12 +41,12 @@ public class JwtUtils {
     public static void verifyToken(String token, String secret) throws Exception {
         DecodedJWT jwt = null;
         try {
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret + "HelloLehr")).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret + "HelloLbw666")).build();
             jwt = verifier.verify(token);
         } catch (Exception e) {
             //效验失败
-            //这里抛出的异常是我自定义的一个异常，你也可以写成别的
-            throw new RuntimeException("TokenUnavailable");
+            throw new RuntimeException("Token校验失败");
+
         }
     }
 
@@ -59,7 +59,7 @@ public class JwtUtils {
             audience = JWT.decode(token).getAudience().get(0);
         } catch (JWTDecodeException j) {
             //这里是token解析失败
-            throw new RuntimeException("TokenUnavailable");
+            throw new RuntimeException("Token无效");
         }
         return audience;
     }
