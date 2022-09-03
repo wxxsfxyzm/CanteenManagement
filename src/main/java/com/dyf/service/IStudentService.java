@@ -42,6 +42,8 @@ public interface IStudentService {
      */
     StudentInfo findByName(String name);
 
+    StudentInfo findByPhoneNumber(String phonenumber);
+
     /**
      * 根据用户id（学号）查找用户
      *

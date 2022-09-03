@@ -2,11 +2,13 @@ package com.dyf.entity;
 
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Web端的学生管理Bean
@@ -21,29 +23,40 @@ import java.math.BigDecimal;
 public class StudentInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Column(name = "student_id")
     @Id
-    private String studentId;
+    private String id;
 
     private String password;
 
-    private String studentName;
+    @Column(name = "student_name")
+    private String userName;
 
+    private String phoneNumber;
+
+    private String sex;
+
+    private Date birthday;
     /**
      * 余额
      */
     private BigDecimal balance;
 
     public StudentInfo(String username, String password) {
-        this.studentName = username;
+        this.userName = username;
         this.password = password;
     }
 
     public StudentInfo(String userid,
+                       String phoneNumber,
                        String username,
                        String password) {
-        this.studentId = userid;
-        this.studentName = username;
+        this.id = userid;
+        this.phoneNumber = phoneNumber;
+        this.userName = username;
         this.password = password;
         this.balance = BigDecimal.valueOf(0.00);
     }
+
+
 }

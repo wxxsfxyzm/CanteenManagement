@@ -25,9 +25,9 @@ public class ResultVOUtil {
 
         orderMasterVO.setCode(SUCCESS);
         orderMasterVO.setMsg(QUERY_SUCCESS);
-        orderMasterVO.setStudentId(studentInfo.getStudentId());
+        orderMasterVO.setStudentId(studentInfo.getId());
         orderMasterVO.setStudentBalance(studentInfo.getBalance());
-        orderMasterVO.setStudentName(studentInfo.getStudentName());
+        orderMasterVO.setStudentName(studentInfo.getUserName());
 
         orderMasterVO.setOrderDTOList(response);
 
@@ -68,6 +68,26 @@ public class ResultVOUtil {
     /**
      * 成功
      *
+     * @param isSuccess true/false
+     * @param msg       信息
+     * @param object    传入一个对象
+     * @return JSON
+     */
+    public static ResultVO success(
+            @Nullable Integer code,
+            @Nullable String msg,
+            @Nullable Object object) {
+        ResultVO resultVO = new ResultVO();
+        resultVO.setSuccess(true);
+        resultVO.setCode(code);
+        resultVO.setMsg(msg);
+        resultVO.setData(object);
+        return resultVO;
+    }
+
+    /**
+     * 成功
+     *
      * @param code code
      * @param msg  信息
      * @return JSON
@@ -90,10 +110,13 @@ public class ResultVOUtil {
      */
     public static ResultVO fail(Integer code, String msg) {
         ResultVO resultVO = new ResultVO();
+        resultVO.setSuccess(false);
         resultVO.setCode(code);
         resultVO.setMsg(msg);
+        resultVO.setData(null);
         return resultVO;
     }
+
 
     /**
      * 失败

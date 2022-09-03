@@ -21,6 +21,7 @@ import static com.dyf.enums.ResultEnum.QUERY_SUCCESS;
 
 @Service
 @Slf4j
+
 public class StudentServiceImpl implements IStudentService {
 
     @Autowired
@@ -29,16 +30,17 @@ public class StudentServiceImpl implements IStudentService {
     @Override
     public StudentDTO findByStudentId(String studentId) {
 
-        StudentInfo studentInfo = iStudentInfoDAO.findByStudentId(studentId);
+        StudentInfo studentInfo = iStudentInfoDAO.queryById(studentId);
 
         /** 查询结果为空的处理 */
         if (studentInfo == null) {
             throw new SellException(ResultEnum.STUDENT_NOT_EXIST);
+
         }
 
         StudentDTO studentDTO = new StudentDTO();
-        studentDTO.setStudentName(studentInfo.getStudentName());
-        studentDTO.setStudentId(studentInfo.getStudentId());
+        studentDTO.setStudentName(studentInfo.getUserName());
+        studentDTO.setStudentId(studentInfo.getId());
         studentDTO.setBalance(studentInfo.getBalance());
 
         return studentDTO;
@@ -47,7 +49,7 @@ public class StudentServiceImpl implements IStudentService {
     @Override
     public StudentInfo findByStudentIdUsedByAdmin(String studentId) {
 
-        StudentInfo studentInfo = iStudentInfoDAO.findByStudentId(studentId);
+        StudentInfo studentInfo = iStudentInfoDAO.queryById(studentId);
 
         /* 查询结果为空的处理 */
         if (studentInfo == null) {
@@ -59,26 +61,26 @@ public class StudentServiceImpl implements IStudentService {
 
     @Override
     public Page<StudentInfo> findByStudentName(String studentName, Pageable pageable) {
-        return iStudentInfoDAO.findByStudentNameLike("%" + studentName + "%", pageable);
+        return iStudentInfoDAO.findByUserNameLike("%" + studentName + "%", pageable);
     }
 
     @Override
     public Page<StudentInfo> findByStudentId(String studentId, Pageable pageable) {
-        return iStudentInfoDAO.findByStudentIdLike("%" + studentId + "%", pageable);
+        return iStudentInfoDAO.findByIdLike("%" + studentId + "%", pageable);
     }
 
     @Override
     public StudentDTO pay(OrderDTO orderDTO) {
         //通过订单查询学生信息
-        StudentInfo studentInfo = iStudentInfoDAO.findByStudentId(orderDTO.getStudentId());
+        StudentInfo studentInfo = iStudentInfoDAO.queryById(orderDTO.getStudentId());
 
         //扣除学生的余额
         studentInfo.setBalance(studentInfo.getBalance().subtract(orderDTO.getOrderAmount()));
 
         //返回studentDTO对象
         StudentDTO studentDTO = new StudentDTO();
-        studentDTO.setStudentId(studentInfo.getStudentId());
-        studentDTO.setStudentName(studentInfo.getStudentName());
+        studentDTO.setStudentId(studentInfo.getId());
+        studentDTO.setStudentName(studentInfo.getUserName());
         studentDTO.setBalance(studentInfo.getBalance());
 
         //将修改后的数据保存到数据库
@@ -90,15 +92,15 @@ public class StudentServiceImpl implements IStudentService {
     @Override
     public StudentDTO pay(BigDecimal totalPrice, String studentId) {
         //通过订单查询学生信息
-        StudentInfo studentInfo = iStudentInfoDAO.findByStudentId(studentId);
+        StudentInfo studentInfo = iStudentInfoDAO.queryById(studentId);
 
         //扣除学生的余额
         studentInfo.setBalance(studentInfo.getBalance().subtract(totalPrice));
 
         //返回studentDTO对象
         StudentDTO studentDTO = new StudentDTO();
-        studentDTO.setStudentId(studentInfo.getStudentId());
-        studentDTO.setStudentName(studentInfo.getStudentName());
+        studentDTO.setStudentId(studentInfo.getId());
+        studentDTO.setStudentName(studentInfo.getUserName());
         studentDTO.setBalance(studentInfo.getBalance());
 
         //将修改后的数据保存到数据库
@@ -162,7 +164,20 @@ public class StudentServiceImpl implements IStudentService {
         //List<User> user = userDAO.findAll();
         for (StudentInfo singleUser : iStudentInfoDAO.findAll()) {
             // log.info(singleUser.toString());
-            if (Objects.equals(singleUser.getStudentName(), username)) {
+            if (Objects.equals(singleUser.getUserName(), username)) {
+                log.info(QUERY_SUCCESS.getMessage());
+                return singleUser;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public StudentInfo findByPhoneNumber(String phonenumber) {
+        //List<User> user = userDAO.findAll();
+        for (StudentInfo singleUser : iStudentInfoDAO.findAll()) {
+            // log.info(singleUser.toString());
+            if (Objects.equals(singleUser.getPhoneNumber(), phonenumber)) {
                 log.info(QUERY_SUCCESS.getMessage());
                 return singleUser;
             }
@@ -175,7 +190,7 @@ public class StudentServiceImpl implements IStudentService {
         //List<User> user = userDAO.findAll();
         for (StudentInfo singleUser : iStudentInfoDAO.findAll()) {
             // log.info(singleUser.toString());
-            if (Objects.equals(singleUser.getStudentId(), userId)) {
+            if (Objects.equals(singleUser.getId(), userId)) {
                 log.info(QUERY_SUCCESS.getMessage());
                 return singleUser;
             }

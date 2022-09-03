@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://www.carlyu.top:3306/canteenmanagement?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://192.168.206.129:3306/canteenmanagement?characterEncoding=utf-8&useSSL=false
   jpa:
     show-sql: true
     hibernate:

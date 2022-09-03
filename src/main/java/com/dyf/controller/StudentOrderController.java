@@ -42,7 +42,7 @@ public class StudentOrderController {
 
         return ResultVOUtil.queryOrderMasterSuccess(orderMaster, studentInfo);
     }
-    
+
     @PostMapping(value = "/create", produces = "application/json")
     public ResultVO create(@RequestBody OrderForm orderForm) {
         OrderDTO orderDTO = new OrderDTO();

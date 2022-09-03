@@ -63,7 +63,12 @@ public class SellController {
     @PostMapping(value = "/pay", produces = "application/json")
     public ResultVO pay(@RequestBody OrderForm orderForm) {
         /* 根据传入的学生id查询相关的学生信息 */
-        StudentDTO studentDTO = iStudentService.findByStudentId(orderForm.getStudentId());
+        StudentDTO studentDTO = new StudentDTO();
+        try {
+            studentDTO = iStudentService.findByStudentId(orderForm.getStudentId());
+        } catch (SellException e) {
+            return ResultVOUtil.fail(STUDENT_NOT_EXIST.getCode(), STUDENT_NOT_EXIST.getMessage());
+        }
         StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(orderForm.getStudentId());
 
         BigDecimal foodPrice;

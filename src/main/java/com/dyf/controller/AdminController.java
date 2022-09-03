@@ -150,7 +150,7 @@ public class AdminController {
         }
 
         if (studentForm.getBalance() != null) studentInfo.setBalance(studentForm.getBalance());
-        if (studentForm.getStudentName() != null) studentInfo.setStudentName(studentForm.getStudentName());
+        if (studentForm.getStudentName() != null) studentInfo.setUserName(studentForm.getStudentName());
         if (studentForm.getPassword() != null) studentInfo.setPassword(studentForm.getPassword());
 
         return ResultVOUtil.success(EDIT_SUCCESS.getMessage(), iStudentService.editStudent(studentInfo));
