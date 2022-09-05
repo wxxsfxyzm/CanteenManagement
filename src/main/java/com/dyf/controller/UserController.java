@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.Objects;
 
-import static com.dyf.constant.Constant.*;
+import static com.dyf.constant.Constant.LOGIN_LOGIC;
+import static com.dyf.constant.Constant.REGISTER_LOGIC;
 import static com.dyf.enums.ResultEnum.*;
 
 @CrossOrigin
@@ -133,7 +133,7 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/deposit")
+/*    @PostMapping(value = "/deposit")
     public ResultVO stuDeposit(
             @RequestParam(value = "userid") String studentId,
             @RequestParam(value = "balance") BigDecimal amount) {
@@ -152,5 +152,5 @@ public class UserController {
         StudentInfo studentInfoAfterDepositOperation = iStudentService.stuDeposit(student, amount);
 
         return ResultVOUtil.success(DEPOSIT_SUCCESS.getMessage(), studentInfoAfterDepositOperation);
-    }
+    }*/
 }

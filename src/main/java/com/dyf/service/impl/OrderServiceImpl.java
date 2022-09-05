@@ -17,7 +17,7 @@ import com.dyf.service.IFoodInfoService;
 import com.dyf.service.IOrderService;
 import com.dyf.service.IStudentService;
 import com.dyf.utils.KeyUtil;
-import org.hibernate.criterion.Order;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,8 +30,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static com.dyf.enums.ResultEnum.QUERY_SUCCESS;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements IOrderService {
 
     @Autowired
@@ -94,7 +98,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public OrderDTO create(Order2DTO order2DTO){
+    public OrderDTO create(Order2DTO order2DTO) {
 
         Orders orders = new Orders();
 
@@ -134,9 +138,22 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public List<Orders> findListByUserId(String userId) {
-        List <Orders>  ordersList= new ArrayList<>();
+        List<Orders> ordersList;
         ordersList = iOrdersDAO.findByUserId(userId);
 
+
+        return ordersList;
+    }
+
+    @Override
+    public List<Orders> findListByUserId(String userId, Integer status) {
+        List<Orders> ordersList = new ArrayList<>();
+        for (Orders singleOrder : iOrdersDAO.findAll()) {
+            if (Objects.equals(singleOrder.getGoodsStatus(), status)) {
+                log.info(QUERY_SUCCESS.getMessage());
+                ordersList.add(singleOrder);
+            }
+        }
 
         return ordersList;
     }

@@ -75,27 +75,22 @@ public class OrderController {
     public ResultVO getHistory(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @RequestParam(value = "status") Integer status,
             HttpServletRequest request) {
 
         PageRequest pageRequest = PageRequest.of(page - 1, size);
 
 //       Page<StudentInfo> studentInfoPage = iStudentService.getStudentPage(pageRequest);
         //先根据userId查出相应的订单
-        //List<Order2DTO> ordersList = iOrderService.findListByUserId(request.getAttribute("userId").toString());
-        List<Orders> ordersList = iOrderService.findListByUserId("1231");
+//        List<Orders> ordersList = iOrderService.findListByUserId(request.getAttribute("userId").toString(), status);
+        // id写死，测试用
+        List<Orders> ordersList = iOrderService.findListByUserId("1231", status);
 
         //使用jdk8的流式编程对list集合进行分组
         Map<String, List<Orders>> listMap = ordersList.stream().collect(Collectors.groupingBy(t -> t.getOrderId()));
 
-        ResultVO resultVO = new ResultVO();
 
-        resultVO.setCode(200);
-        resultVO.setData(listMap);
-        resultVO.setSuccess(true);
-        resultVO.setMsg("查询历史订单成功");
-
-
-        return resultVO;
+        return ResultVOUtil.success(200, "查询历史订单成功", listMap);
     }
 
     @PostMapping(value = "/addMoney")
