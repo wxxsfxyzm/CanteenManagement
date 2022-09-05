@@ -2,6 +2,8 @@ package com.dyf.service;
 
 import com.dyf.dto.Order2DTO;
 import com.dyf.dto.OrderDTO;
+import com.dyf.entity.FoodInfo;
+import com.dyf.entity.Orders;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,7 +19,7 @@ public interface IOrderService
     /**  查询单个订单  */
     OrderDTO  findById(String orderId);
 
-    List<Order2DTO> findListByUserId(String orderId);
+    List<Orders> findListByUserId(String userId);
 
 
     /**  查询某个用户的订单列表 */

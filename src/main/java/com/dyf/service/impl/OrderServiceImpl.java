@@ -17,6 +17,7 @@ import com.dyf.service.IFoodInfoService;
 import com.dyf.service.IOrderService;
 import com.dyf.service.IStudentService;
 import com.dyf.utils.KeyUtil;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -131,10 +133,12 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public List<Order2DTO> findListByUserId(String orderId) {
+    public List<Orders> findListByUserId(String userId) {
+        List <Orders>  ordersList= new ArrayList<>();
+        ordersList = iOrdersDAO.findByUserId(userId);
 
 
-        return null;
+        return ordersList;
     }
 
     /**
