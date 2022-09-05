@@ -78,7 +78,7 @@ public class UserController {
      * @param password    密码
      * @return JSON
      */
-    @PostMapping("/register")
+    @PostMapping(value = "/register", produces = "application/json")
     @PassToken
     public ResultVO register(
             @RequestParam(value = "phone") String phonenumber,

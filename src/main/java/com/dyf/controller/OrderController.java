@@ -7,24 +7,24 @@ import com.dyf.entity.FoodInfo;
 import com.dyf.entity.Orders;
 import com.dyf.entity.StudentInfo;
 import com.dyf.form.Order2Form;
-import com.dyf.form.OrderForm;
 import com.dyf.service.IFoodInfoService;
 import com.dyf.service.IOrderService;
+import com.dyf.service.IStudentService;
 import com.dyf.utils.ResultVOUtil;
 import com.dyf.vo.ResultVO;
-import com.dyf.vo.StudentInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dyf.enums.ResultEnum.QUERY_SUCCESS;
+import static com.dyf.constant.Constant.DEPOSIT_LOGIC;
+import static com.dyf.enums.ResultEnum.STUDENT_NOT_EXIST;
 
 @CrossOrigin
 @RestController
@@ -38,14 +38,17 @@ public class OrderController {
     @Autowired
     private IOrderService iOrderService;
 
-   @PostMapping(value = "/orderTea", produces = "application/json")
-    public ResultVO create(@RequestBody Order2Form orderForm, HttpServletRequest request){
-       if (orderForm == null){
-           log.info("orderForm为空");
-       }
+    @Autowired
+    private IStudentService iStudentService;
 
-        for (GoodsDTO goodsDTO : orderForm.getGoodsDTOList()){
-            if (goodsDTO == null){
+    @PostMapping(value = "/orderTea", produces = "application/json")
+    public ResultVO create(@RequestBody Order2Form orderForm, HttpServletRequest request) {
+        if (orderForm == null) {
+            log.info("orderForm为空");
+        }
+
+        for (GoodsDTO goodsDTO : orderForm.getGoodsDTOList()) {
+            if (goodsDTO == null) {
                 log.info("goods为空");
             }
             Order2DTO order2DTO = new Order2DTO();
@@ -65,36 +68,53 @@ public class OrderController {
 
             return ResultVOUtil.success(order2DTO);
         }
-       return ResultVOUtil.success(100);
-   }
+        return ResultVOUtil.success(100);
+    }
 
-   @PostMapping(value = "/getHistory", produces = "application/json")
-   public ResultVO getHistory(
-           @RequestParam(value = "page", defaultValue = "1") Integer page,
-           @RequestParam(value = "size", defaultValue = "10") Integer size,
-           HttpServletRequest request) {
+    @PostMapping(value = "/getHistory", produces = "application/json")
+    public ResultVO getHistory(
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size,
+            HttpServletRequest request) {
 
-       PageRequest pageRequest = PageRequest.of(page - 1, size);
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
 
 //       Page<StudentInfo> studentInfoPage = iStudentService.getStudentPage(pageRequest);
-       //先根据userId查出相应的订单
-       //List<Order2DTO> ordersList = iOrderService.findListByUserId(request.getAttribute("userId").toString());
-       List<Orders> ordersList = iOrderService.findListByUserId("1231");
+        //先根据userId查出相应的订单
+        //List<Order2DTO> ordersList = iOrderService.findListByUserId(request.getAttribute("userId").toString());
+        List<Orders> ordersList = iOrderService.findListByUserId("1231");
 
-       //使用jdk8的流式编程对list集合进行分组
-       Map<String, List<Orders>> listMap = ordersList.stream().collect(Collectors.groupingBy(t -> t.getOrderId()));
+        //使用jdk8的流式编程对list集合进行分组
+        Map<String, List<Orders>> listMap = ordersList.stream().collect(Collectors.groupingBy(t -> t.getOrderId()));
 
-       ResultVO resultVO = new ResultVO();
+        ResultVO resultVO = new ResultVO();
 
-       resultVO.setCode(200);
-       resultVO.setData(listMap);
-       resultVO.setSuccess(true);
-       resultVO.setMsg("查询历史订单成功");
+        resultVO.setCode(200);
+        resultVO.setData(listMap);
+        resultVO.setSuccess(true);
+        resultVO.setMsg("查询历史订单成功");
 
 
-       return resultVO;
-   }
+        return resultVO;
+    }
 
+    @PostMapping(value = "/addMoney")
+    public ResultVO stuDeposit(
+            @RequestParam(value = "money") BigDecimal amount,
+            HttpServletRequest request) {
+        String userId = request.getAttribute("userId").toString();
+        StudentInfo student = iStudentService.findById(userId);
+        String info = DEPOSIT_LOGIC;
+        log.info(info);
+        if (student == null) {
+            info = STUDENT_NOT_EXIST.getMessage();
+            log.info(info);
+            return ResultVOUtil.fail(STUDENT_NOT_EXIST.getCode(), info);
+        }
+        log.info(student.toString());
+        StudentInfo studentInfoAfterDepositOperation = iStudentService.stuDeposit(student, amount);
+        return ResultVOUtil.success(200, "充值成功", studentInfoAfterDepositOperation);
+    }
 
 
 }

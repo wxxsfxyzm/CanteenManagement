@@ -11,4 +11,8 @@ public class Order2Form implements Serializable {
     private static final long serialVersionUID = 1l;
 
     private List<GoodsDTO> goodsDTOList;
+
+    public Order2Form(List<GoodsDTO> goodsDTOList) {
+        this.goodsDTOList = goodsDTOList;
+    }
 }

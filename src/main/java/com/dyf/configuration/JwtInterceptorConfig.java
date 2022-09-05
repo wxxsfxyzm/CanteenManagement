@@ -12,9 +12,9 @@ public class JwtInterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         //  默认拦截所有路径
-//        registry.addInterceptor(authenticationInterceptor())
-//                .addPathPatterns("/**")
-//                .excludePathPatterns("/error");
+        registry.addInterceptor(authenticationInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/error");
     }
 
     @Bean
