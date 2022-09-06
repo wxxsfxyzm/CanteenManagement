@@ -14,7 +14,7 @@ public interface IOrderService {
      */
     OrderDTO create(OrderDTO orderDTO);
 
-    OrderDTO create(Order2DTO order2DTO);
+    void create(Order2DTO order2DTO);
 
     /**
      * 查询单个订单

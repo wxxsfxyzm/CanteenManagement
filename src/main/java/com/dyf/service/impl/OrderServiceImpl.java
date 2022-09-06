@@ -98,7 +98,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public OrderDTO create(Order2DTO order2DTO) {
+    public void create(Order2DTO order2DTO) {
 
         Orders orders = new Orders();
 
@@ -114,7 +114,7 @@ public class OrderServiceImpl implements IOrderService {
 
         iOrdersDAO.save(orders);
 
-        return null;
+
     }
 
     @Override

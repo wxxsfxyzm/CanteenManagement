@@ -30,6 +30,8 @@ public class Order2DTO {
 
     private Integer goodsNumber;
 
+    private Integer goodsStatus;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd  HH:mm:ss")
     @CreationTimestamp
     private Date createTime;
