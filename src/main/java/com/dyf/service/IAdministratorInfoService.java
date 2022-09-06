@@ -1,7 +1,8 @@
 package com.dyf.service;
 
-public interface IAdministratorInfoService
-{
+import com.dyf.entity.AdministratorInfo;
 
+public interface IAdministratorInfoService {
+    AdministratorInfo findByAdminId(String adminId);
 
 }

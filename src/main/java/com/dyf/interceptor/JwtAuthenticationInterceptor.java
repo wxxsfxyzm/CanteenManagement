@@ -3,6 +3,7 @@ package com.dyf.interceptor;
 import com.alibaba.fastjson.JSONObject;
 import com.dyf.annotation.JwtAnnotation.PassToken;
 import com.dyf.dto.StudentDTO;
+import com.dyf.service.IAdministratorInfoService;
 import com.dyf.service.IStudentService;
 import com.dyf.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ import java.lang.reflect.Method;
 public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     IStudentService accountService;
+
+    @Autowired
+    IAdministratorInfoService iAdministratorInfoService;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
@@ -45,7 +49,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         }
         //默认全部检查
         else {
-            System.out.println("Method No PassToken");
+            System.out.println(method + "Method No PassToken");
             // 执行认证
             if (token == null) {
                 //  登录失效,没token了
@@ -59,7 +63,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
                 //throw new RuntimeException(method + "NeedToLogin");
             }
 
-            // 获取 token 中的 user Name
+            // 获取 token 中的 userType
+            //String userType = String.valueOf(JwtUtils.getClaimByName(token, "userType"));
+            //if (Objects.equals(userType, "user")) {
             String userId = null;
             try {
                 userId = JwtUtils.getAudience(token);
@@ -72,7 +78,6 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             StudentDTO user = accountService.findByStudentId(userId);
 
             if (user == null) {
-                //这个错误也是我自定义的
                 try {
                     ExceptionHandler(httpServletResponse, "token无效");
                     return false;
@@ -98,6 +103,47 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
             //放入attribute以便后面调用
             httpServletRequest.setAttribute("userId", userId);
+ /*           } else if (Objects.equals(userType, "admin")) {
+                if (Objects.equals(userType, "user")) {
+                    String adminId = null;
+                    try {
+                        adminId = JwtUtils.getAudience(token);
+                    } catch (RuntimeException e) {
+                        ExceptionHandler(httpServletResponse, e.getMessage());
+                        return false;
+                    }
+
+                    //找找看是否有这个user   因为我们需要检查用户是否存在，读者可以自行修改逻辑
+                    AdministratorInfo administratorInfo = iAdministratorInfoService.findByAdminId(adminId);
+
+                    if (administratorInfo == null) {
+                        try {
+                            ExceptionHandler(httpServletResponse, "token无效");
+                            return false;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            httpServletResponse.sendError(500);
+                        }
+                    }
+
+                    // 验证 token
+                    try {
+                        JwtUtils.verifyToken(token, adminId);
+                    } catch (RuntimeException e) {
+                        ExceptionHandler(httpServletResponse, e.getMessage());
+                        return false;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        httpServletResponse.sendError(500);
+                    }
+
+                    //获取载荷内容
+                    // String userName = JwtUtils.getClaimByName(token, "userName").asString();
+
+                    //放入attribute以便后面调用
+                    httpServletRequest.setAttribute("adminId", adminId);
+                }
+            }*/
 
 
             return true;

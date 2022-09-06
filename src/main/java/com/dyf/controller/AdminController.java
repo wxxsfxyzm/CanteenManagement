@@ -1,5 +1,6 @@
 package com.dyf.controller;
 
+import com.dyf.annotation.JwtAnnotation;
 import com.dyf.entity.FoodInfo;
 import com.dyf.entity.StudentInfo;
 import com.dyf.enums.ResultEnum;
@@ -33,14 +34,58 @@ import static com.dyf.enums.ResultEnum.*;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+    /*    @Autowired
+        private IAdministratorInfoService iAdministratorInfoService;*/
     @Autowired
     private IStudentService iStudentService;
 
     @Autowired
     private IFoodInfoService iFoodInfoService;
 
+    /*
+
+    /**
+     * @param adminId  adminId
+     * @param password password
+     * @return code, token
+     *//*
+    @PostMapping(value = "/login")
+    @PassToken
+    public AdminVO login(
+            @RequestParam(value = "adminId") String adminId,
+            @RequestParam(value = "password") String password) {
+        String info = "管理员" + LOGIN_LOGIC;
+        log.info(info +
+                ": adminId = " +
+                adminId +
+                ", password = " +
+                password);
+
+        AdministratorInfo administratorInfo = iAdministratorInfoService.findByAdminId(adminId);
+
+        if (administratorInfo != null) {
+            log.info(administratorInfo.toString());
+            if (Objects.equals(password, administratorInfo.getAdminPassword())) {
+                info = "管理员" + LOGIN_SUCCESS.getMessage();
+                String token = JwtUtils.createToken(administratorInfo);
+                //UserDTO userDTO = new UserDTO(new UserInfoVO(user, true), new TokenVO("认证成功", true, token));
+                return new AdminVO(0, token);
+            } else {
+                info = PASSWORD_MISMATCH.getMessage();
+                log.info(info);
+                return new AdminVO(-1, null);
+            }
+        } else {
+            info = STUDENT_NOT_EXIST.getMessage();
+            log.info(info);
+        }
+
+        return new AdminVO(-1, null);
+    }*/
+
     // http://127.0.0.1:8080/canteen/admin/getFoodList
     @GetMapping("/getFoodList")
+    @JwtAnnotation.PassToken
     public ResultVO getFoodList() {
         List<FoodInfo> foodInfoList = iFoodInfoService.findAll();
         List<FoodInfoVO> foodInfoVOList = new ArrayList<>();
@@ -58,6 +103,7 @@ public class AdminController {
 
     // http://127.0.0.1:8080/canteen/admin/addFood
     @PostMapping("/addFood")
+    @JwtAnnotation.PassToken
     public ResultVO addFood(@RequestBody FoodForm foodForm) {
 
         FoodInfo foodInfo = new FoodInfo();
@@ -75,6 +121,7 @@ public class AdminController {
     }
 
     @PostMapping("/editFood")
+    @JwtAnnotation.PassToken
     public ResultVO editFood(@RequestBody FoodForm foodForm) {
         FoodInfo foodInfo = iFoodInfoService.findById(foodForm.getFoodId());
 
@@ -92,6 +139,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/getFoodListByName", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO getFoodListByName(@RequestParam String foodName) {
 
         List<FoodInfo> foodInfoList = iFoodInfoService.findByFoodName(foodName);
@@ -102,6 +150,7 @@ public class AdminController {
     }
 
     @GetMapping("/getStudentList")
+    @JwtAnnotation.PassToken
     public ResultVO getStudentList(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
@@ -122,6 +171,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/addStudent", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO addStudent(@RequestBody StudentForm studentForm) {
         if (studentForm == null) {
             return ResultVOUtil.fail(ADD_FAIL.getCode(), ADD_FAIL.getMessage());
@@ -136,6 +186,7 @@ public class AdminController {
 
 
     @PostMapping(value = "/editStudent", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO editStudent(@RequestBody StudentForm studentForm) {
         if (studentForm == null) {
             return ResultVOUtil.fail(EDIT_FAIL.getCode(), EDIT_FAIL.getMessage());
@@ -156,6 +207,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/stuDeposit", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO stuDeposit(String studentId, BigDecimal amount) {
         StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
 
@@ -173,6 +225,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/deleteStudent", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO deleteStudent(String studentId) {
         try {
             StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
@@ -186,6 +239,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/findStudentByName", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO findStudentByName(
             @RequestParam String studentName,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -202,6 +256,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/findStudentById", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO findStudentById(
             @RequestParam String studentId,
             @RequestParam(value = "page", defaultValue = "1") Integer page,

@@ -43,7 +43,9 @@ public enum ResultEnum {
 
     ORDER_DETAIL_NOT_EXIST(102, "订单详情不存在"),
 
-    STUDENT_NOT_EXIST(103, "学生不存在");
+    STUDENT_NOT_EXIST(103, "学生不存在"),
+
+    ADMIN_NOT_EXIST(null, "管理员不存在");
 
     private final Integer code;
 

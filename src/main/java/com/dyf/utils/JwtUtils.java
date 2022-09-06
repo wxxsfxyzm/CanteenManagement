@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.dyf.entity.AdministratorInfo;
 import com.dyf.entity.StudentInfo;
 
 import java.util.Calendar;
@@ -28,8 +29,20 @@ public class JwtUtils {
         return JWT.create().withAudience(user.getId())   //签发对象
                 .withIssuedAt(new Date())    //发行时间
                 .withExpiresAt(expiresDate)  //有效时间
-                .withClaim("userName", user.getUserName())    //载荷
+                .withClaim("userType", "user")    //载荷
                 .sign(Algorithm.HMAC256(user.getId() + "HelloLbw666"));   //加密
+    }
+
+    public static String createToken(AdministratorInfo administratorInfo) {
+        Calendar nowTime = Calendar.getInstance();
+        nowTime.add(Calendar.MINUTE, 600);
+        Date expiresDate = nowTime.getTime();
+
+        return JWT.create().withAudience(administratorInfo.getAdminId())   //签发对象
+                .withIssuedAt(new Date())    //发行时间
+                .withExpiresAt(expiresDate)  //有效时间
+                .withClaim("userType", "admin")    //载荷
+                .sign(Algorithm.HMAC256(administratorInfo.getAdminId() + "HelloLbw666"));   //加密
     }
 
     /**
@@ -71,4 +84,5 @@ public class JwtUtils {
     public static Claim getClaimByName(String token, String name) {
         return JWT.decode(token).getClaim(name);
     }
+
 }
