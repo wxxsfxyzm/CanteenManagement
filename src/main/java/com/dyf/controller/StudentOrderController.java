@@ -7,6 +7,7 @@ import com.dyf.dto.OrderDTO;
 import com.dyf.entity.OrderDetail;
 import com.dyf.entity.Orders;
 import com.dyf.entity.StudentInfo;
+import com.dyf.exception.SellException;
 import com.dyf.form.OrderForm;
 import com.dyf.service.IOrderService;
 import com.dyf.service.IStudentService;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.dyf.enums.ResultEnum.ILLEGAL_REQUEST;
 import static com.dyf.enums.ResultEnum.ORDER_CREATE_SUCCESS;
 
 @Slf4j
@@ -56,14 +58,20 @@ public class StudentOrderController {
     @JwtAnnotation.PassToken
     public ResultVO finish(@RequestParam(value = "orderId") String orderId) {
         List<Orders> ordersList = iOrderService.findListByOrderId(orderId);
+        if (ordersList == null) {
+            // 不能把 status 1 改成 1
+            throw new SellException(ILLEGAL_REQUEST);
+        }
+        // 把查出来的订单 status 改为 1
         Order2DTO order2DTO = new Order2DTO();
         for (Orders singleList : ordersList) {
             singleList.setGoodsStatus(1);
             BeanUtils.copyProperties(singleList, order2DTO);
+            // 提交更改
             iOrderService.create(order2DTO);
         }
-        
-        return ResultVOUtil.success(200, "", ordersList);
+
+        return ResultVOUtil.success(200, "已经使用", ordersList);
     }
 
 

@@ -5,6 +5,8 @@ import org.springframework.lang.Nullable;
 
 @Getter
 public enum ResultEnum {
+    ILLEGAL_REQUEST(null, "非法请求"),
+
     LOGIN_SUCCESS(null, "登陆成功"),
 
     REGISTER_SUCCESS(null, "注册成功"),
