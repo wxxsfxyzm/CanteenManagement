@@ -60,6 +60,17 @@ public class StudentServiceImpl implements IStudentService {
     }
 
     @Override
+    public StudentInfo findByStudentPhoneUsedByAdmin(String phone) {
+        StudentInfo studentInfo = iStudentInfoDAO.findByPhoneNumber(phone);
+        /* 查询结果为空的处理 */
+        if (studentInfo == null) {
+            throw new SellException(ResultEnum.STUDENT_NOT_EXIST);
+        }
+
+        return studentInfo;
+    }
+
+    @Override
     public Page<StudentInfo> findByStudentName(String studentName, Pageable pageable) {
         return iStudentInfoDAO.findByUserNameLike("%" + studentName + "%", pageable);
     }

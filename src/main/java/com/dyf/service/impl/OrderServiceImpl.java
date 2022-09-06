@@ -158,6 +158,18 @@ public class OrderServiceImpl implements IOrderService {
         return ordersList;
     }
 
+    @Override
+    public List<Orders> findListByOrderId(String orderId) {
+        List<Orders> ordersList = new ArrayList<>();
+        for (Orders singleOrder : iOrdersDAO.findByOrderId(orderId)) {
+            if (Objects.equals(singleOrder.getGoodsStatus(), 0)) {
+                log.info(QUERY_SUCCESS.getMessage());
+                ordersList.add(singleOrder);
+            }
+        }
+        return ordersList;
+    }
+
     /**
      * 返回值为page
      */

@@ -15,6 +15,8 @@ public interface IStudentService {
 
     StudentInfo findByStudentIdUsedByAdmin(String studentId);
 
+    StudentInfo findByStudentPhoneUsedByAdmin(String phone);
+
     Page<StudentInfo> findByStudentName(String studentName, Pageable pageable);
 
     Page<StudentInfo> findByStudentId(String studentId, Pageable pageable);

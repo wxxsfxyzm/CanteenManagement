@@ -112,6 +112,7 @@ public class AdminController {
 //        foodInfo.setFoodPrice(foodForm.getFoodPrice());
 //        foodInfo.setFoodName(foodForm.getFoodName());
         foodForm.setFoodId(KeyUtil.genUniqueFoodKey());
+        //foodForm.setFoodClass(f);
 
         BeanUtils.copyProperties(foodForm, foodInfo);
 
@@ -209,7 +210,7 @@ public class AdminController {
     @PostMapping(value = "/stuDeposit", produces = "application/json")
     @JwtAnnotation.PassToken
     public ResultVO stuDeposit(String studentId, BigDecimal amount) {
-        StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
+        StudentInfo studentInfo = iStudentService.findByStudentPhoneUsedByAdmin(studentId);
 
         if (studentInfo == null) {
             throw new SellException(STUDENT_NOT_EXIST);
@@ -228,7 +229,7 @@ public class AdminController {
     @JwtAnnotation.PassToken
     public ResultVO deleteStudent(String studentId) {
         try {
-            StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
+            StudentInfo studentInfo = iStudentService.findByStudentPhoneUsedByAdmin(studentId);
             iStudentService.deleteStudent(studentInfo);
         } catch (SellException sellException) {
             log.error(STUDENT_NOT_EXIST.getMessage());

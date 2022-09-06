@@ -25,6 +25,8 @@ public interface IOrderService {
 
     List<Orders> findListByUserId(String userId, Integer status);
 
+    List<Orders> findListByOrderId(String orderId);
+
     /**
      * 查询某个用户的订单列表
      */

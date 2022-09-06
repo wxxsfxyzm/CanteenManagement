@@ -1,21 +1,26 @@
 package com.dyf.controller;
 
+import com.dyf.annotation.JwtAnnotation;
 import com.dyf.dto.ChosenFoodDTO;
+import com.dyf.dto.Order2DTO;
 import com.dyf.dto.OrderDTO;
 import com.dyf.entity.OrderDetail;
+import com.dyf.entity.Orders;
 import com.dyf.entity.StudentInfo;
 import com.dyf.form.OrderForm;
 import com.dyf.service.IOrderService;
 import com.dyf.service.IStudentService;
 import com.dyf.utils.ResultVOUtil;
-import com.dyf.vo.OrderMasterVO;
 import com.dyf.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.dyf.enums.ResultEnum.ORDER_CREATE_SUCCESS;
 
@@ -32,18 +37,38 @@ public class StudentOrderController {
 
 
     @PostMapping(value = "/orderMaster", produces = "application/json")
-    public OrderMasterVO orderMaster(String studentId) {
-        StudentInfo studentInfo = iStudentService.findByStudentIdUsedByAdmin(studentId);
-        List<OrderDTO> orderMaster = iOrderService.findList(studentId);
+    @JwtAnnotation.PassToken
+    public ResultVO orderMaster(@RequestParam(value = "studentId") String phoneNumber) {
+        StudentInfo studentInfo = iStudentService.findByStudentPhoneUsedByAdmin(phoneNumber);
+        List<Orders> ordersList = iOrderService.findListByUserId(studentInfo.getId());
 
-        if (orderMaster == null) {
-            return ResultVOUtil.queryOrderMasterFail();
+        if (ordersList == null) {
+            return ResultVOUtil.success(200, "订单为空", null);
         }
 
-        return ResultVOUtil.queryOrderMasterSuccess(orderMaster, studentInfo);
+        Map<String, List<Orders>> listMap = ordersList.stream().collect(Collectors.groupingBy(t -> t.getOrderId()));
+
+
+        return ResultVOUtil.success(200, "查询订单成功", listMap);
     }
 
+    @PostMapping(value = "/finish", produces = "application/json")
+    @JwtAnnotation.PassToken
+    public ResultVO finish(@RequestParam(value = "orderId") String orderId) {
+        List<Orders> ordersList = iOrderService.findListByOrderId(orderId);
+        Order2DTO order2DTO = new Order2DTO();
+        for (Orders singleList : ordersList) {
+            singleList.setGoodsStatus(1);
+            BeanUtils.copyProperties(singleList, order2DTO);
+            iOrderService.create(order2DTO);
+        }
+        
+        return ResultVOUtil.success(200, "", ordersList);
+    }
+
+
     @PostMapping(value = "/create", produces = "application/json")
+    @JwtAnnotation.PassToken
     public ResultVO create(@RequestBody OrderForm orderForm) {
         OrderDTO orderDTO = new OrderDTO();
 
