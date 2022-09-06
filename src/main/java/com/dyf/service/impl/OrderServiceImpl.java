@@ -148,7 +148,7 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public List<Orders> findListByUserId(String userId, Integer status) {
         List<Orders> ordersList = new ArrayList<>();
-        for (Orders singleOrder : iOrdersDAO.findAll()) {
+        for (Orders singleOrder : iOrdersDAO.findByUserId(userId)) {
             if (Objects.equals(singleOrder.getGoodsStatus(), status)) {
                 log.info(QUERY_SUCCESS.getMessage());
                 ordersList.add(singleOrder);
