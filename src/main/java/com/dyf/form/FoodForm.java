@@ -17,6 +17,8 @@ public class FoodForm implements Serializable {
 
     private BigDecimal foodPrice;
 
+    private String foodDescribe;
+
     private String foodIcon;
 
     @JsonProperty("classInfo")
