@@ -4,10 +4,12 @@ package com.dyf.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.dyf.dto.GoodsDTO;
 import com.dyf.dto.Order2DTO;
+import com.dyf.dto.StudentDTO;
 import com.dyf.entity.FoodInfo;
 import com.dyf.entity.Orders;
 import com.dyf.service.IFoodInfoService;
 import com.dyf.service.IOrderService;
+import com.dyf.service.IStudentService;
 import com.dyf.utils.ResultVOUtil;
 import com.dyf.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,6 +37,9 @@ public class OrderController {
     @Autowired
     private IOrderService iOrderService;
 
+    @Autowired
+    private IStudentService iStudentService;
+
     @PostMapping(value = "/orderTea", produces = "application/json")
     public ResultVO create(@RequestBody JSONArray jsonParam, HttpServletRequest request) {
         if (jsonParam == null) {
@@ -42,6 +48,8 @@ public class OrderController {
         List<GoodsDTO> goodsDTOList = jsonParam.toJavaList(GoodsDTO.class);
 
         log.info(goodsDTOList.toString());
+
+        BigDecimal sum = BigDecimal.ZERO;
 
         String orderId = genUniqueKey();
 
@@ -55,22 +63,28 @@ public class OrderController {
             FoodInfo foodInfo = new FoodInfo();
             foodInfo = iFoodInfoService.findById(goodsDTO.getGoodsId());
 
-
             order2DTO.setUserId(request.getAttribute("userId").toString());
             // order2DTO.setUserId("1231");
+            sum = sum.add(foodInfo.getFoodPrice().multiply(BigDecimal.valueOf(goodsDTO.getNum())));
+
             order2DTO.setGoodsId(goodsDTO.getGoodsId());
             order2DTO.setGoodsNumber(goodsDTO.getNum());
             order2DTO.setGoodsDetail(goodsDTO.getDetails());
             order2DTO.setGoodsName(foodInfo.getFoodName());
             order2DTO.setImgUrl(foodInfo.getFoodIcon());
-            order2DTO.setGoodsPrice(foodInfo.getFoodPrice());
             order2DTO.setGoodsStatus(0);
-
             order2DTO.setOrderId(orderId);
+            order2DTO.setGoodsPrice(foodInfo.getFoodPrice());
 
             iOrderService.create(order2DTO);
-
         }
+
+        StudentDTO studentDTO = iStudentService.pay(sum,request.getAttribute("userId").toString());
+        int flag = studentDTO.getBalance().compareTo(BigDecimal.ZERO);
+        if (flag == -1){
+            return ResultVOUtil.fail(100,"余额不足");
+        }
+
         return ResultVOUtil.success(200, "下单成功", null);
     }
 
