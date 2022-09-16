@@ -69,6 +69,26 @@ public class OrderController {
             order2DTO.setUserId(request.getAttribute("userId").toString());
             // order2DTO.setUserId("1231");
             sum = sum.add(foodInfo.getFoodPrice().multiply(BigDecimal.valueOf(goodsDTO.getNum())));
+        }
+        StudentDTO studentDTO = iStudentService.pay(sum,request.getAttribute("userId").toString());
+        int flag = studentDTO.getBalance().compareTo(BigDecimal.ZERO);
+        if (flag == -1){
+            return ResultVOUtil.fail(100,"余额不足");
+        }
+
+        for (GoodsDTO goodsDTO : goodsDTOList) {
+            if (goodsDTO == null) {
+                log.info("goods为空");
+                return ResultVOUtil.fail(100, "Goods为空");
+            }
+            Order2DTO order2DTO = new Order2DTO();
+
+            FoodInfo foodInfo = new FoodInfo();
+            foodInfo = iFoodInfoService.findById(goodsDTO.getGoodsId());
+
+            order2DTO.setUserId(request.getAttribute("userId").toString());
+            // order2DTO.setUserId("1231");
+            sum = sum.add(foodInfo.getFoodPrice().multiply(BigDecimal.valueOf(goodsDTO.getNum())));
 
             order2DTO.setGoodsId(goodsDTO.getGoodsId());
             order2DTO.setGoodsNumber(goodsDTO.getNum());
@@ -82,11 +102,6 @@ public class OrderController {
             iOrderService.create(order2DTO);
         }
 
-        StudentDTO studentDTO = iStudentService.pay(sum, request.getAttribute("userId").toString());
-        int flag = studentDTO.getBalance().compareTo(BigDecimal.ZERO);
-        if (flag == -1) {
-            return ResultVOUtil.fail(100, "余额不足");
-        }
 
         return ResultVOUtil.success(200, "下单成功", null);
     }
