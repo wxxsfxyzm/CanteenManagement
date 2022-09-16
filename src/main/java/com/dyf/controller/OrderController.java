@@ -7,6 +7,7 @@ import com.dyf.dto.Order2DTO;
 import com.dyf.dto.StudentDTO;
 import com.dyf.entity.FoodInfo;
 import com.dyf.entity.Orders;
+import com.dyf.entity.StudentInfo;
 import com.dyf.service.IFoodInfoService;
 import com.dyf.service.IOrderService;
 import com.dyf.service.IStudentService;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.dyf.constant.Constant.DEPOSIT_LOGIC;
+import static com.dyf.enums.ResultEnum.STUDENT_NOT_EXIST;
 import static com.dyf.utils.KeyUtil.genUniqueKey;
 
 @CrossOrigin
@@ -79,10 +82,10 @@ public class OrderController {
             iOrderService.create(order2DTO);
         }
 
-        StudentDTO studentDTO = iStudentService.pay(sum,request.getAttribute("userId").toString());
+        StudentDTO studentDTO = iStudentService.pay(sum, request.getAttribute("userId").toString());
         int flag = studentDTO.getBalance().compareTo(BigDecimal.ZERO);
-        if (flag == -1){
-            return ResultVOUtil.fail(100,"余额不足");
+        if (flag == -1) {
+            return ResultVOUtil.fail(100, "余额不足");
         }
 
         return ResultVOUtil.success(200, "下单成功", null);
@@ -107,6 +110,25 @@ public class OrderController {
 
 
         return ResultVOUtil.success(200, "查询历史订单成功", listMap);
+    }
+
+    @PostMapping(value = "/addMoney")
+    public ResultVO stuDeposit(
+            @RequestParam(value = "money") BigDecimal amount,
+            HttpServletRequest request) {
+        String userId = request.getAttribute("userId").toString();
+        StudentInfo student = iStudentService.findById(userId);
+        String info = DEPOSIT_LOGIC;
+        log.info(info);
+        if (student == null) {
+            info = STUDENT_NOT_EXIST.getMessage();
+            log.info(info);
+            return ResultVOUtil.fail(STUDENT_NOT_EXIST.getCode(), info);
+        }
+        log.info(student.toString());
+        StudentInfo studentInfoAfterDepositOperation = iStudentService.stuDeposit(student, amount);
+        return ResultVOUtil.success(200, "充值成功", studentInfoAfterDepositOperation);
+
     }
 
 
